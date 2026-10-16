@@ -255,3 +255,11 @@ by a later `libsystemd_scan()`/`libsystemd_load_rules()` replay.
   with the resolved name is currently registered.
 - `-ESRCH` - the resolved unit exists but has no running process to stop.
 - `-ENOMEM` - allocation failed while resolving the target.
+
+## Library-service instance lifecycle
+
+The enable/disable library lifecycle described above applies to plain libraries.
+Modules implementing both DIF callbacks in `libsystemd_service.h` instead receive
+per-unit START/STOP with expanded arguments. Unit state is independent of an
+already-enabled shared module; stop does not disconnect other API consumers.
+See [configuration](configuration.md#typelibrary-a-service-backed-by-a-library-module).
