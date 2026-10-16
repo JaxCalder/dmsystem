@@ -31,4 +31,11 @@ board-to-router ping, host-to-board ping and telnet command execution passed.
 The physical board also rejected stopping the plain ICMP library while dmudp
 requires it, preserving the running service and ping responses.
 
-Details and console evidence are in dmod-boot docs/validation/utc-regression-2026-10-16.md.
+The boot integration results are summarized in
+https://github.com/choco-technologies/dmod-boot/pull/132.
+Raw board and emulator logs are retained locally rather than published.
+
+With the emulator audio models enabled, a one-second 523 Hz tone plays with
+zero underruns. Captured stereo PCM has equal channels and a measured frequency
+of about 522 Hz by zero crossings, consistent with the requested tone and the
+measurement window. This checks signal generation, not clock calibration.
