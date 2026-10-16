@@ -39,3 +39,8 @@ With the emulator audio models enabled, a one-second 523 Hz tone plays with
 zero underruns. Captured stereo PCM has equal channels and a measured frequency
 of about 522 Hz by zero crossings, consistent with the requested tone and the
 measurement window. This checks signal generation, not clock calibration.
+
+Network qualification: fresh host-to-board ping sessions lose their first
+request (extended probe: 9/10), while the gateway control probe is 3/3. The
+cause remains unresolved; the board network checks do not establish loss-free
+operation. The skipped Renode TAP test also remains a validation limitation.
