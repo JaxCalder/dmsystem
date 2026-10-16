@@ -1,9 +1,10 @@
 # Library lifecycle validation — 2026-10-16
 
-- Native libsystemd diagnostic: 62/62, including cold loading a DIF-only
+- Native libsystemd diagnostic: 63/63, including cold loading a DIF-only
   library, a module already enabled through an API dependency, two unit
   instances sharing one module, failed starts, status, removal/re-add and
-  refreshed %v paths. Plain library lifecycle tests remain passing.
+  refreshed %v paths. The additional plain-library test performs two full load/enable,
+  duplicate-START, disable/unload and restart cycles without lifecycle DIF.
 - Native systemd and service command diagnostics: 1/1 each.
 - Full Cortex-M7 build passed, including both lifecycle helper modules.
 - STM32F746G-DISCO integration with dmdevfs and dmutc: the RTC event starts
@@ -18,3 +19,16 @@ inactive template instance expands the new event value instead of keeping
 an old device path.
 
 Board console evidence is maintained in the dmutc PR alongside its diagnostic.
+
+## Complete boot integration regression
+
+The dmod-boot CI Renode runner passed console/VFS, SD identification and
+automount, read/write across unmount/remount, LCD splash/selftest/fill/bars/
+gradient and touch coordinates/watch tests. A second run with the board audio
+models enabled also passed those checks. The host lacks root and /dev/net/tun,
+so emulated network testing was skipped explicitly; physical board DHCP,
+board-to-router ping, host-to-board ping and telnet command execution passed.
+The physical board also rejected stopping the plain ICMP library while dmudp
+requires it, preserving the running service and ping responses.
+
+Details and console evidence are in dmod-boot docs/validation/utc-regression-2026-10-16.md.

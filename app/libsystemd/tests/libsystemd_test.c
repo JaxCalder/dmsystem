@@ -981,3 +981,26 @@ DMOD_TEST_STEP(library_callbacks_start_on_first_load_and_on_restart)
     DMOD_TEST_EXPECT_EQ(status.state,DMOSI_PROCESS_STATE_RUNNING);
     DMOD_TEST_EXPECT_EQ(libsystemd_stop_service("cold@rtc"),0);
 }
+
+DMOD_TEST_STEP(plain_library_retains_enable_disable_unload_and_restart)
+{
+    DMOD_TEST_EXPECT_FALSE(Dmod_IsModuleLoaded("dmtestplain"));
+    DMOD_TEST_EXPECT_EQ(libsystemd_scan(LIBSYSTEMD_TEST_FIXTURES_DIR "/lifecycle"), 0);
+    libsystemd_service_status_t status;
+    for (int cycle = 0; cycle < 2; ++cycle)
+    {
+        DMOD_TEST_EXPECT_EQ(libsystemd_start_service("plain@legacy", "/ignored/argument"), 0);
+        DMOD_TEST_EXPECT_TRUE(Dmod_IsModuleLoaded("dmtestplain"));
+        DMOD_TEST_EXPECT_TRUE(Dmod_IsModuleEnabled("dmtestplain"));
+        DMOD_TEST_EXPECT_EQ(libsystemd_status("plain@legacy", &status), 0);
+        DMOD_TEST_EXPECT_EQ(status.state, DMOSI_PROCESS_STATE_RUNNING);
+        DMOD_TEST_EXPECT_EQ(status.pid, 0);
+        DMOD_TEST_EXPECT_EQ(libsystemd_start_service("plain@legacy", NULL), -EALREADY);
+        DMOD_TEST_EXPECT_EQ(libsystemd_stop_service("plain@legacy"), 0);
+        DMOD_TEST_EXPECT_FALSE(Dmod_IsModuleEnabled("dmtestplain"));
+        DMOD_TEST_EXPECT_FALSE(Dmod_IsModuleLoaded("dmtestplain"));
+        DMOD_TEST_EXPECT_EQ(libsystemd_status("plain@legacy", &status), 0);
+        DMOD_TEST_EXPECT_EQ(status.state, DMOSI_PROCESS_STATE_CREATED);
+        DMOD_TEST_EXPECT_EQ(libsystemd_stop_service("plain@legacy"), -ESRCH);
+    }
+}
